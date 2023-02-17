@@ -47,7 +47,7 @@ export function NoteForm({onSubmit, onAddTag, availableTags, title="", markdown=
                         <Form.Label>Tags</Form.Label>
                         <CreatableReactSelect 
                         onCreateOption={label => {
-                            const newTag = { id : uuidV4(), label}
+                            const newTag = { id : uuidV4(), label, color: "blue"}
                             onAddTag(newTag)
                             setSelectedTags(prev => [...prev, newTag])
                         }}
@@ -59,7 +59,7 @@ export function NoteForm({onSubmit, onAddTag, availableTags, title="", markdown=
                         })}
                         onChange={tags => {
                             setSelectedTags(tags.map(tag => {
-                                return { label: tag.label, id: tag.value }
+                                return { label: tag.label, id: tag.value, color: "blue" }
                             }))
                         }}
                         isMulti/>

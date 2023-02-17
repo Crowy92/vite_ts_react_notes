@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Row, Col, Stack, Button, Form, Card, Badge, Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import ReactSelect from "react-select"
+import Select from "react-select"
 import { Note, Tag } from "./App";
 import styles from "./NoteList.module.css"
 
@@ -13,15 +13,25 @@ type SimplifiedNote = {
 type NoteListProps = {
     availableTags: Tag[]
     notes: SimplifiedNote[]
-    onUpdateTag: (id: string, label:string) => void
+    onUpdateTag: (id: string, label:string, color:string) => void
     onDeleteTag: (id: string) => void
 }
 type EditTagsModalProps = {
     show: boolean
     availableTags: Tag[]
     handleClose: () => void
-    onUpdateTag: (id: string, label:string) => void
+    onUpdateTag: (id: string, label:string, color:string) => void
     onDeleteTag: (id: string) => void
+}
+const colors: Record<string, string> = {
+    blue:'bg-primary',
+    grey:'bg-secondary',
+    green:'bg-success',
+    red:'bg-danger',
+    yellow:'bg-warning',
+    teal:'bg-info',
+    white:'bg-light',
+    black:'bg-dark'
 }
 
 export function NoteList({ availableTags, notes, onUpdateTag, onDeleteTag } : NoteListProps) {
@@ -62,7 +72,7 @@ export function NoteList({ availableTags, notes, onUpdateTag, onDeleteTag } : No
             <Col>
             <Form.Group controlId="tags">
             <Form.Label>Tags</Form.Label>
-                <ReactSelect 
+                <Select 
                 value={selectedTags.map(tag => {
                     return { label: tag.label, value : tag.id}
                 })} 
@@ -71,7 +81,7 @@ export function NoteList({ availableTags, notes, onUpdateTag, onDeleteTag } : No
                 })}
                 onChange={tags => {
                     setSelectedTags(tags.map(tag => {
-                        return { label: tag.label, id: tag.value }
+                        return { label: tag.label, id: tag.value, color: "blue" }
                     }))
                 }}
                 isMulti/>
@@ -100,7 +110,7 @@ function NoteCard({id, title, tags} : SimplifiedNote){
                     <Stack gap={1} direction="horizontal" className="
                     justify-content-center flex-wrap">
                         {tags.map(tag => (
-                            <Badge className="tex-truncate" 
+                            <Badge className={`tex-truncate ${colors[tag.color] ? colors[tag.color]: 'bg-primary'}`}
                             key={tag.id}>{tag.label}</Badge>
                         ))}
                     </Stack>    
@@ -121,7 +131,23 @@ function EditTagsModal({availableTags, handleClose, show, onDeleteTag, onUpdateT
                     {availableTags.map(tag => (
                         <Row key={tag.id}>
                             <Col>
-                            <Form.Control type="text" value={tag.label} onChange={e => onUpdateTag(tag.id, e.target.value)}/></Col>
+                            <Form.Control type="text" value={tag.label} onChange={e => onUpdateTag(tag.id, e.target.value, "pass")}/></Col>
+                            <Col>
+                            {/* <Form.Control type="text" value={tag.color} onChange={e => onUpdateTag(tag.id, "pass", e.target.value)}/></Col> */}
+                            <Form.Group controlId="tags">
+                                <Select 
+                                // value={Object.keys(colors).map(color => {
+                                //     return { label: color, value : color}
+                                // })} 
+                                value={{label: tag.color, value : tag.color}}
+                                options={Object.keys(colors).map(color => {
+                                    return { label: color, value: color} 
+                                })}
+                                onChange={e => {
+                                    onUpdateTag(tag.id, "pass", e!.value)
+                                    }}/>
+                            </Form.Group>
+                            </Col>
                             <Col xs="auto">
                                 <Button variant="outline-danger" onClick={() => onDeleteTag(tag.id)}>&times;</Button>
                             </Col>

@@ -21,6 +21,7 @@ export type NoteData = {
 export type Tag = {
   id : string
   label: string
+  color: string
 }
 export type RawNote = {
   id: string
@@ -52,11 +53,13 @@ function App() {
   function addTag(tag:Tag) {
     setTags(prev => [...prev, tag])
   }
-  function updateTag(id:string, label: string) {
+  function updateTag(id:string, label: string, color: string) {
     setTags(prev => {
       return prev.map(tag => {
-        if (tag.id === id) {
+        if (tag.id === id && label != "pass") {
           return {...tag, label}
+        } else if (tag.id === id && color != "pass") {
+          return {...tag, color}
         } else {
           return tag
         }
@@ -94,7 +97,7 @@ function App() {
         <Route path="/new" element={<NewNote onSubmit={onCreateNote} onAddTag={addTag} availableTags={tags}/>}/>
         <Route path="/:id" element={<NoteLayout notes={notesWithTags}/>}>
           <Route index element={<Note onDelete={onDeleteNote} />}/>
-          <Route path="edit" element={<EditNote onSubmit={onUpdateNote} onAddTag={addTag} availableTags={tags}/>}/>
+          <Route path="edit" element={<EditNote onSubmit={onUpdateNote} onAddTag={addTag} availableTags={tags} />}/>
         </Route>
         <Route path="*" element={<Navigate to="/"/>}/>
       </Routes>
